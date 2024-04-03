@@ -11,9 +11,9 @@ data_options:
   CGM: 0
   CHO: 0
   Insulin: 0
-dropout: 0.5
-epoch: 1
+dropout: 0
+epoch: 10
 input_window: 9
-learning_rate: 0.0001
+learning_rate: 0.01
 output_window: 6
 stride: 1

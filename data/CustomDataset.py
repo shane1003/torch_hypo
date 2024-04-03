@@ -1,9 +1,12 @@
 from torch.utils.data import Dataset
 from torch.utils.data import TensorDataset # 텐서데이터셋
 from torch.utils.data import DataLoader # 데이터로더
+import torch
 
 class CustomDataset(Dataset):
     def __init__(self, x, y):
+        super(CustomDataset, self).__init__()
+
         self.x_data = x
         self.y_data = y
     

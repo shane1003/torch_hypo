@@ -8,6 +8,7 @@ import numpy as np
 from data.excel2pd import data_load
 from data.preprocessing import data_preprocessing
 from data.train_test_split import data2Window, X_Y2train_test, X_Y_from_data
+from model.model import seq2seq
 
 import torch
 import torch.nn as nn
@@ -26,6 +27,8 @@ def main():
                                                     setup['input_window'],
                                                     setup['output_window'],
                                                     setup['stride'])
+
+    s2s = seq2seq(3, setup['LSTM'][0], 1, 0)
 
 if __name__ == '__main__':
     main()
