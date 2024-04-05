@@ -73,14 +73,14 @@ class seq2seq(nn.Module):
         # Full teacher forcing for decoder or not.
         # Teacher Forcning(Give the answer)
         if random.random() <= teacher_forcing_ratio:
-            print("Teacher Forcing!")
+            #print("Teacher Forcing!")
             out, hidden = self.decoder(decoder_input, hidden)
 
             outputs[:, :, :] = out[:, :, :]
         
         # Non-Teacher Forcing(Using past output)
         else:
-            print("Non-Teacher forcing")
+            #print("Non-Teacher forcing")
             
             for t in range(target_len): #0 1 2 3 4 5
                 out, hidden = self.decoder(decoder_input, hidden)
@@ -117,16 +117,23 @@ class seq2seq(nn.Module):
         '''
 
     def predict(self, inputs, target_len):
-        inputs = inputs.unsqueeze(0)
+        outputs = torch.zeros(1, target_len, 1)
+
+        inputs = inputs.squeeze().unsqueeze(0)
         self.eval()
         batch_size = inputs.shape[0]
-        input_size = inputs.shape[2]
-        outputs = torch.zeros(batch_size, target_len, input_size)
-        _, hiddens = self.encoder(inputs)
-        decoder_input = inputs[:,-1, :]
-        for t in range(target_len): 
-            out, hidden = self.decoder(decoder_input, hiddens)
-            out =  out.squeeze(1)
-            decoder_input = out
-            outputs[:,t,:] = out
-        return outputs.detach().numpy()[0,:,0]
+
+        encoder_input = inputs[:,0:self.input_window,:]
+        decoder_input = inputs[:,(-1)*self.output_window:,:]
+
+        _, hidden = self.encoder(encoder_input)
+
+        for t in range(target_len):
+            out, hidden = self.decoder(decoder_input, hidden)
+
+            if t < target_len - 1 : 
+                decoder_input[:, t + 1, 0] = out[:, t , 0]
+
+            outputs[:, t, 0] = out[:, t, 0]
+
+        return outputs.detach().numpy().squeeze()
